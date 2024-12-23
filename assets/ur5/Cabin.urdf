@@ -1,0 +1,17 @@
+<?xml version="1.0" ?>
+<robot name="m0609">
+  <link name="Cabin">
+	<inertial>
+	  <mass value="3.722"/>
+	  <origin xyz="-1.2e-05 -6e-05 0.050723"/>
+      <inertia ixx="0.011" ixy="-7.19e-06" ixz="-1.94e-06" iyy="0.011" iyz="4.9e-06" izz="0.014"/>
+    </inertial>
+	<visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="assets/ur5/m0609_collision/Cabin_khung.STL" scale="0.01 0.01 0.01"/>
+      </geometry>
+      <material name="dr_gray"/>
+    </visual>
+  </link>
+ </robot>
