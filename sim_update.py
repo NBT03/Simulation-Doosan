@@ -15,17 +15,17 @@ class PyBulletSim:
         else:
             p.connect(p.DIRECT)
         p.setAdditionalSearchPath(pybullet_data.getDataPath())
-        self._plane_id = p.loadURDF("assets/ur5/plane.urdf")
+        self._plane_id = p.loadURDF("assets/doosan/plane.urdf")
         p.setGravity(0, 0, -9.8)
 
         # load Doosan robot
         self.robot_body_id = p.loadURDF(
-            "assets/ur5/doosan_origin.urdf", [0, 0, 0], p.getQuaternionFromEuler([0, 0, 0]))
+            "assets/doosan/doosan_origin.urdf", [0, 0, 0], p.getQuaternionFromEuler([0, 0, 0]))
 
         # self._base_id = p.loadURDF(
-        #     "assets/ur5/base_doosan.urdf", [0.75,0.3,0], p.getQuaternionFromEuler([0,0,np.pi]),useFixedBase=True)
+        #     "assets/doosan/base_doosan.urdf", [0.75,0.3,0], p.getQuaternionFromEuler([0,0,np.pi]),useFixedBase=True)
         # self._cabin_id = p.loadURDF(
-        #     "assets/ur5/Cabin.urdf",[-0.75,-1,0], p.getQuaternionFromEuler([np.pi/2, 0, np.pi/2]),useFixedBase=True)
+        #     "assets/doosan/Cabin.urdf",[-0.75,-1,0], p.getQuaternionFromEuler([np.pi/2, 0, np.pi/2]),useFixedBase=True)
         self._gripper_body_id = None
         self.robot_end_effector_link_index = 6
         self._robot_tool_offset = [0, 0, 0]
@@ -118,7 +118,7 @@ class PyBulletSim:
             return
 
         # Attach robotiq gripper to UR5 robot
-        # - We use createConstraint to add a fixed constraint between the ur5 robot and gripper.
+        # - We use createConstraint to add a fixed constraint between the doosan robot and gripper.
         self._gripper_body_id = p.loadURDF("assets/gripper/robotiq_2f_85.urdf")
         p.resetBasePositionAndOrientation(self._gripper_body_id, [
                                           0.5, 0.1, 0.2], p.getQuaternionFromEuler([np.pi/2, 0, 0]))
@@ -388,8 +388,3 @@ def get_tableau_palette():
         dtype=np.cfloat
     )
     return palette / 255.
-
-
-
-
-

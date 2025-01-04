@@ -7,14 +7,14 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="assets/ur5/m0609_collision/Bin.STL" scale="0.1 0.1 0.1"/>
+        <mesh filename="assets/doosan/m0609_collision/Bin.STL" scale="0.1 0.1 0.1"/>
       </geometry>
       <material name="Blanc"/>
-    </visual>
+    </visual>s
     <collision concave="yes">
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-	 	     <mesh filename="assets/ur5/m0609_collision/Bin.STL" scale="0.1 0.1 0.1"/>
+	 	     <mesh filename="assets/doosan/m0609_collision/Bin.STL" scale="0.1 0.1 0.1"/>
       </geometry>
     </collision>
     <inertial>

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <robot
-  name="Doosan_loz">
+  name="Doosan">
   <material name="black">
     <color rgba="0.0 0.0 0.0 1.0"/>
   </material>
@@ -34,7 +34,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="m0609_blue/MF0609_0_0.dae" scale="0.001 0.001 0.001"/>
+          filename="m0609_collision/MF0609_0_0.dae" scale="0.001 0.001 0.001"/>
       </geometry>
       <material
         name="base_0">
@@ -69,7 +69,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="m0609_blue/MF0609_1_0.dae" scale="0.001 0.001 0.001"/>
+          filename="m0609_collision/MF0609_1_0.dae" scale="0.001 0.001 0.001"/>
       </geometry>
       <material
         name="link1">
@@ -111,14 +111,14 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="m0609_blue/MF0609_2_0.dae" scale="0.001 0.001 0.001"/>
+        <mesh filename="m0609_collision/MF0609_2_0.dae" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="dr_white"/>
     </visual>
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-		<mesh filename="m0609_blue/MF0609_2_1.dae" scale="0.001 0.001 0.001"/>
+		<mesh filename="m0609_collision/MF0609_2_1.dae" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="dr_gray">
         <color rgba="0.490 0.490 0.486 1.0"/>
@@ -127,7 +127,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-		<mesh filename="m0609_blue/MF0609_2_2.dae" scale="0.001 0.001 0.001"/>
+		<mesh filename="m0609_collision/MF0609_2_2.dae" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="dr_white"/>
     </visual>
@@ -192,7 +192,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-		<mesh filename="m0609_blue/MF0609_3_0.dae" scale="0.001 0.001 0.001"/>
+		<mesh filename="m0609_collision/MF0609_3_0.dae" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="dr_white"/>
     </visual>
@@ -226,7 +226,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-		<mesh filename="m0609_blue/MF0609_4_0.dae" scale="0.001 0.001 0.001"/>
+		<mesh filename="m0609_collision/MF0609_4_0.dae" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="dr_white"/>
     </visual>
@@ -278,7 +278,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-		<mesh filename="m0609_blue/MF0609_5_0.dae" scale="0.001 0.001 0.001"/>
+		<mesh filename="m0609_collision/MF0609_5_0.dae" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="dr_white"/>
     </visual>
@@ -311,7 +311,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-		<mesh filename="m0609_blue/MF0609_6_0.dae" scale="0.001 0.001 0.001"/>
+		<mesh filename="m0609_collision/MF0609_6_0.dae" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="dr_gray"/>
     </visual>
