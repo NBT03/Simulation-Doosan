@@ -1,6 +1,6 @@
 from __future__ import division
 from os import link
-import sim_update
+import sim
 import pybullet as p
 import random
 import numpy as np
@@ -126,7 +126,7 @@ def run():
                 for joint_state in path_conf:
                     env.move_joints(joint_state, speed=0.05)
                     link_state = p.getLinkState(env.robot_body_id, env.robot_end_effector_link_index)
-                    # markers.append(sim_update.SphereMarker(link_state[0], radius=0.02))
+                    # markers.append(sim.SphereMarker(link_state[0], radius=0.02))
 
                 print("Path executed. Dropping the object")
 
@@ -235,7 +235,7 @@ if __name__ == "__main__":
     object_shapes = [
         "assets/objects/rod.urdf",
     ]
-    env = sim_update.PyBulletSim(object_shapes = object_shapes)
+    env = sim.PyBulletSim(object_shapes = object_shapes)
     thread1 = threading.Thread(target=run)
     thread2 = threading.Thread(target=draw)
     thread1.start()

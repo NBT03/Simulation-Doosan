@@ -2,7 +2,7 @@ from __future__ import division
 import random
 import math
 import pybullet as p
-import sim_update
+import sim
 import threading
 import time
 from scipy.spatial import cKDTree
@@ -356,7 +356,7 @@ def run_bidirectional_rrt():
                 for joint_state in path_conf:
                     env.move_joints(joint_state, speed=0.01)
                     link_state = p.getLinkState(env.robot_body_id, env.robot_end_effector_link_index)
-                    markers.append(sim_update.SphereMarker(link_state[0], radius=0.01))
+                    markers.append(sim.SphereMarker(link_state[0], radius=0.01))
                 print("Path executed. Dropping the object")
                 env.open_gripper()
                 env.step_simulation(num_steps=5)
@@ -368,7 +368,7 @@ def run_bidirectional_rrt():
                     for joint_state in path_conf_reversed:
                         env.move_joints(joint_state, speed=0.01)
                         link_state = p.getLinkState(env.robot_body_id, env.robot_end_effector_link_index)
-                        markers.append(sim_update.SphereMarker(link_state[0], radius=0.01))
+                        markers.append(sim.SphereMarker(link_state[0], radius=0.01))
                 markers = None
             p.removeAllUserDebugItems()
 
@@ -544,7 +544,7 @@ if __name__ == "__main__":
     object_shapes = [
         "assets/objects/rod.urdf",
     ]
-    env = sim_update.PyBulletSim(object_shapes=object_shapes)
+    env = sim.PyBulletSim(object_shapes=object_shapes)
     thread1 = threading.Thread(target=run_bidirectional_rrt)
     thread2 = threading.Thread(target=draw)
     thread1.start()
