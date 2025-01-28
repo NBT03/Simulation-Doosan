@@ -6,7 +6,7 @@ import math
 class PyBulletSim:
     def __init__(self, use_random_objects=False, object_shapes=None, gui=True):
         self._workspace1_bounds = np.array([
-            [-0.16, -0.17],  # 3x2 rows: x,y,z cols: min,max
+            [-0.16, -0.17],
             [-0.55, -0.55],
             [0.1, 0.2]
         ])
@@ -29,19 +29,12 @@ class PyBulletSim:
         self._gripper_body_id = None
         self.robot_end_effector_link_index = 6
         self._robot_tool_offset = [0, 0, 0]
-        # Distance between tool tip and end-effector joint
         self._tool_tip_to_ee_joint = np.array([0, 0, 0.15])
-
-        # Get revolute joint indices of robot (skip fixed joints)
         robot_joint_info = [p.getJointInfo(self.robot_body_id, i) for i in range(
             p.getNumJoints(self.robot_body_id))]
         self._robot_joint_indices = [
             x[0] for x in robot_joint_info if x[2] == p.JOINT_REVOLUTE]
-
-        # joint position threshold in radians (i.e. move until joint difference < epsilon)
         self._joint_epsilon = 1e-3
-
-        # Robot home joint configuration (over tote 1)
         self.robot_home_joint_config = [np.pi*(-94.06/180),
                                         np.pi*(-13.65/180),
                                         np.pi*(101.87/180),
@@ -49,8 +42,6 @@ class PyBulletSim:
                                         np.pi * (89.39/180),
                                         np.pi * (3.73/180)]
 
-
-        # Robot goal joint configuration (over tote 2)
         self.robot_goal_joint_config = [ np.pi * (0.00 / 180),
                                         np.pi * (30 / 180),
                                         np.pi * (60.87 / 180),
@@ -62,7 +53,6 @@ class PyBulletSim:
         self._tote_id = p.loadURDF(
             "assets/tote/tote_bin.urdf",[-0.3,-0.35,0.10], p.getQuaternionFromEuler([np.pi/2, 0, 0]), useFixedBase=True)
         self._object_colors = get_tableau_palette()
-        # - Define possible object shapes
         if object_shapes is not None:
             self._object_shapes = object_shapes
         else:
@@ -81,30 +71,31 @@ class PyBulletSim:
             p.changeVisualShape(object_body_id, -1, rgbaColor=[*self._object_colors[i], 1])
         self.reset_objects()
         self.obstacles = [
-            # p.loadURDF('assets/obstacles/block.urdf',
-            #            basePosition=[0.5, -0.6, 0.25],
-            #            useFixedBase=True
-            #            ),
+            p.loadURDF('assets/obstacles/block.urdf',
+                       basePosition=[0.5, -0.6, 0.3],
+                       useFixedBase=True
+                       ),
             p.loadURDF('assets/obstacles/block.urdf',
                        basePosition=[0.35, -0.35, 0.26],
+                       useFixedBase=True
+                       ),
+            p.loadURDF('assets/obstacles/block.urdf',
+                       basePosition=[0.2, 0.6, 0.35],
+                       useFixedBase=True
+                       ),
+            p.loadURDF('assets/obstacles/block.urdf',
+                       basePosition=[0.35, 0.7, 0.31],
                        useFixedBase=True
                        ),
         ]
 
     def get_distance_to_obstacle(self, q_nearest, obstacle):
-        # Đặt cấu hình của robot tại q_nearest
         self.set_joint_positions(q_nearest)
-
-        # Lấy vị trí hiện tại của end-effector (hoặc vị trí quan trọng bạn muốn)
         end_effector_pos = p.getLinkState(self.robot_body_id, self.robot_end_effector_link_index)[0]
-
-        # Lấy vị trí của obstacle
         obstacle_pos, _ = p.getBasePositionAndOrientation(obstacle)
-
-        # Tính khoảng cách Euclid giữa end-effector và obstacle
         distance = np.linalg.norm(np.array(end_effector_pos) - np.array(obstacle_pos))
-
         return distance
+
     def get_obstacles_positions(self):
         obstacle_positions = []
         for obstacle_id in self._objects_body_ids:  # assuming you store the obstacle IDs in _objects_body_ids
@@ -117,8 +108,6 @@ class PyBulletSim:
             print("Gripper already loaded")
             return
 
-        # Attach robotiq gripper to UR5 robot
-        # - We use createConstraint to add a fixed constraint between the doosan robot and gripper.
         self._gripper_body_id = p.loadURDF("assets/gripper/robotiq_2f_85.urdf")
         p.resetBasePositionAndOrientation(self._gripper_body_id, [
                                           0.5, 0.1, 0.2], p.getQuaternionFromEuler([np.pi/2, 0, 0]))
@@ -126,7 +115,6 @@ class PyBulletSim:
         p.createConstraint(self.robot_body_id, self.robot_end_effector_link_index, self._gripper_body_id, -1, jointType=p.JOINT_FIXED, jointAxis=[
                            0, 0, 0], parentFramePosition=[0, 0, 0], childFramePosition=self._robot_tool_offset, childFrameOrientation=p.getQuaternionFromEuler([0, 0, 0]))
 
-        # Set friction coefficients for gripper fingers
         for i in range(p.getNumJoints(self._gripper_body_id)):
             p.changeDynamics(self._gripper_body_id, i, lateralFriction=1.0, spinningFriction=1.0,
                              rollingFriction=0.0001, frictionAnchor=True)
@@ -141,7 +129,6 @@ class PyBulletSim:
 
         timeout_t0 = time.time()
         while True:
-            # Keep moving until joints reach the target configuration
             current_joint_state = [
                 p.getJointState(self.robot_body_id, i)[0]
                 for i in self._robot_joint_indices
@@ -163,7 +150,7 @@ class PyBulletSim:
                 break
             self.step_simulation(1)
     def move_tool(self, position, orientation, speed=0.03):
-        target_joint_state = np.zeros((6,))  # this should contain appropriate joint angle values
+        target_joint_state = np.zeros((6,))
         target_joint_state = p.calculateInverseKinematics(self.robot_body_id,
                                                           self.robot_end_effector_link_index,
                                                           position, orientation,
@@ -215,7 +202,6 @@ class PyBulletSim:
         for i in range(int(num_steps)):
             p.stepSimulation()
             if self._gripper_body_id is not None:
-                # Constraints
                 gripper_joint_positions = np.array([p.getJointState(self._gripper_body_id, i)[
                                                 0] for i in range(p.getNumJoints(self._gripper_body_id))])
                 p.setJointMotorControlArray(

@@ -18,7 +18,6 @@ def visualize_path(q_1, q_2, env, color=[0, 1, 0]):
     point_2[2] -= 0.15
     p.addUserDebugLine(point_1, point_2, color, 1.5)
 
-
 def rrt(q_init, q_goal, MAX_ITERS, delta_q, steer_goal_p, env, distance=0.12):
     V, E = [q_init], []
     path, found = [], False
@@ -52,7 +51,6 @@ def rrt(q_init, q_goal, MAX_ITERS, delta_q, steer_goal_p, env, distance=0.12):
     else:
         return None
 
-
 def semi_random_sample(steer_goal_p, q_goal):
     prob = random.random()
 
@@ -63,13 +61,11 @@ def semi_random_sample(steer_goal_p, q_goal):
         q_rand = [random.uniform(-np.pi, np.pi) for i in range(len(q_goal))]
     return q_rand
 
-
 def get_euclidean_distance(q1, q2):
     distance = 0
     for i in range(len(q1)):
         distance += (q2[i] - q1[i])**2
     return math.sqrt(distance)
-
 
 def nearest(V, q_rand):
     distance = float("inf")
@@ -80,7 +76,6 @@ def nearest(V, q_rand):
             distance = get_euclidean_distance(q_rand, v)
     return q_nearest
 
-
 def steer(q_nearest, q_rand, delta_q):
     q_new = None
     if get_euclidean_distance(q_rand, q_nearest) <= delta_q:
@@ -89,7 +84,6 @@ def steer(q_nearest, q_rand, delta_q):
         q_hat = [(q_rand[i] - q_nearest[i]) / get_euclidean_distance(q_rand, q_nearest) for i in range(len(q_rand))]
         q_new = [q_nearest[i] + q_hat[i] * delta_q for i in range(len(q_hat))]
     return q_new
-
 
 def get_grasp_position_angle(object_id):
     position, grasp_angle = np.zeros((3, 1)), 0
@@ -117,27 +111,21 @@ def run():
                 for i in range(1, len(path_conf)):
                     path_length += get_euclidean_distance(path_conf[i-1], path_conf[i])
                 path_lengths.append(path_length)
-                
                 env.set_joint_positions(env.robot_home_joint_config)
                 markers = []
                 for joint_state in path_conf:
                     env.move_joints(joint_state, speed=0.05)
                     link_state = p.getLinkState(env.robot_body_id, env.robot_end_effector_link_index)
                     # markers.append(sim.SphereMarker(link_state[0], radius=0.02))
-
                 print("Path executed. Dropping the object")
-
                 env.open_gripper()
                 env.step_simulation(num_steps=5)
                 env.close_gripper()
-
                 for joint_state in reversed(path_conf):
                     env.move_joints(joint_state, speed=0.1)
                 markers = None
             p.removeAllUserDebugItems()
-
         env.robot_go_home()
-
         object_pos, _ = p.getBasePositionAndOrientation(object_id)
         if object_pos[0] >= -0.8 and object_pos[0] <= -0.2 and\
             object_pos[1] >= -0.3 and object_pos[1] <= 0.3 and\
@@ -146,7 +134,6 @@ def run():
         env.reset_objects()
 def draw():
     print("Starting draw function")
-    # Initialize line IDs
     line_ids = [None, None, None]
     current_object_id = None
     current_obstacle_id = None
@@ -156,25 +143,17 @@ def draw():
     
     while True:
         try:
-            # Ensure there are objects and obstacles in the environment
             if len(env._objects_body_ids) == 0 or len(env.obstacles) == 0:
                 print("No objects or obstacles found, waiting...")
                 time.sleep(0.1)
                 continue
-            
-            # Get current object and obstacle IDs
             object_id = env._objects_body_ids[0]
             obstacles_id = env.obstacles[0]
-            
-            # Check if the object or obstacle has been reset
             if object_id != current_object_id or obstacles_id != current_obstacle_id:
-                # Reset line IDs when a new object or obstacle is detected
                 line_ids = [None, None, None]
                 current_object_id = object_id
                 current_obstacle_id = obstacles_id
                 print(f"Detected object or obstacles change. Updated object_id: {object_id}, obstacle_id: {obstacles_id}")
-            
-            # Verify that the object and obstacle still exist
             try:
                 p.getBodyInfo(object_id)
                 p.getBodyInfo(obstacles_id)
@@ -182,50 +161,35 @@ def draw():
                 print(f"Body ID error: {e}")
                 time.sleep(0.1)
                 continue
-            
-            # Get link positions
             getlink1 = p.getLinkState(object_id, 0)[0]
             getlink2 = p.getLinkState(object_id, 1)[0]
             midpoint = np.add(getlink1, getlink2) / 2
-            
-            # Find the closest points between the object and obstacle
             closest_points = p.getClosestPoints(obstacles_id, object_id, 100)
             if not closest_points:
                 print("No closest points found")
-                a = getlink1  # Assign a default value to avoid errors
+                a = getlink1
             else:
                 a = closest_points[0][5]
-                
-            # Calculate the distance and print it
             distance = get_distance(midpoint, a)
             print(f"Distance between midpoint and closest point: {distance}")
-            
-            # Define lines to be drawn
             lines_to_draw = [
-                (getlink1, a, [1, 0, 0]),    # Red line
-                (getlink2, a, [1, 0, 0]),    # Green line
-                (midpoint, a, [0, 1, 0])     # Green line
+                (getlink1, a, [1, 0, 0]),
+                (getlink2, a, [1, 0, 0]),
+                (midpoint, a, [0, 1, 0])
             ]
-            
-            # Draw or update debug lines
             for i, (start, end, color) in enumerate(lines_to_draw):
                 if line_ids[i] is None:
-                    # Create a new debug line if it doesn't exist
                     line_ids[i] = p.addUserDebugLine(start, end, lineColorRGB=color, lineWidth=2)
                 else:
-                    # Update the existing debug line
                     p.addUserDebugLine(start, end, lineColorRGB=color, lineWidth=2, replaceItemUniqueId=line_ids[i])
             
         except IndexError as e:
             print(f"IndexError: {e}. Possible object or obstacle indices out of range. Retrying...")
-            # Reset line IDs to reinitialize lines in the next iteration
             line_ids = [None, None, None]
             current_object_id = None
             current_obstacle_id = None
         except Exception as e:
             print(f"Exception in draw: {e}")
-        
-        # Pause briefly to reduce CPU usage
         time.sleep(0.1)
 if __name__ == "__main__":
     random.seed(5)

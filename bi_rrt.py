@@ -173,7 +173,6 @@ def run_bidirectional_rrt():
             )
             print("Path configuration:", path_conf)
             if path_conf is None:
-                print("No collision-free path is found within the iteration limit. Continuing ...")
                 path_lengths.append(None)
             else:
                 path_length = 0
@@ -182,8 +181,6 @@ def run_bidirectional_rrt():
                     q_curr = path_conf[i]
                     path_length += get_euclidean_distance(q_prev, q_curr)
                 path_lengths.append(path_length)
-                print(f"Độ dài đường đi: {path_length}")
-
                 env.set_joint_positions(env.robot_home_joint_config)
                 markers = []
                 for joint_state in path_conf:
@@ -235,7 +232,7 @@ def draw():
                 current_object_id = object_id
                 current_obstacle_id = obstacles_id
                 print(f"Detected object or obstacles change. Updated object_id: {object_id}, obstacle_id: {obstacles_id}")
-            
+
             try:
                 p.getBodyInfo(object_id)
                 p.getBodyInfo(obstacles_id)

@@ -26,7 +26,7 @@ def rrt(q_init, q_goal, MAX_ITERS, delta_q, steer_goal_p, env, distance=0.12):
         q_rand = semi_random_sample(steer_goal_p, q_goal)
         q_nearest = nearest(V, q_rand)
         q_new = modified_steer(q_nearest, q_rand, delta_q, q_goal, env)
-        if not env.check_collision(q_new, 0.15):
+        if not env.check_collision(q_new, 0.155):
             if q_new not in V:
                 V.append(q_new)
             if (q_nearest, q_new) not in E:
@@ -57,7 +57,6 @@ def semi_random_sample(steer_goal_p, q_goal):
     if prob < steer_goal_p:
         return q_goal
     else:
-        # Uniform sample over reachable joint angles
         q_rand = [random.uniform(-np.pi, np.pi) for i in range(len(q_goal))]
     return q_rand
 
@@ -128,7 +127,7 @@ def repulsive_force(q_current, env, k_rep=1000.0, d0=1):
 def get_object_check_points(object_pos, object_orn):
     rot_matrix = p.getMatrixFromQuaternion(object_orn)
     rot_matrix = np.array(rot_matrix).reshape(3, 3)
-    half_extents = np.array([0.1, 0.02, 0.02])  # Ví dụ cho một thanh dài
+    half_extents = np.array([0.1, 0.02, 0.02])
     points = []
     for x in [-1, 1]:
         for y in [-1, 1]:
@@ -173,7 +172,6 @@ def run():
     env.load_gripper()
     passed = 0
     for trial in range(num_trials):
-        print(f"Thử nghiệm thứ: {trial + 1}")
         object_id = env._objects_body_ids[0]
         position, grasp_angle = get_grasp_position_angle(object_id)
         grasp_success = env.execute_grasp(position, grasp_angle)
@@ -204,7 +202,6 @@ def run():
 
                 for joint_state in reversed(path_conf):
                     env.move_joints(joint_state, speed=0.05)
-            #     markers = None
             p.removeAllUserDebugItems()
 
         env.robot_go_home()

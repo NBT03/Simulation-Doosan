@@ -9,7 +9,7 @@ from scipy.spatial import cKDTree
 import numpy as np
 
 MAX_ITERS = 10000
-delta_q = 0.1  # Step size
+delta_q = 0.1
 
 class Node:
     def __init__(self, joint_positions, parent=None):
@@ -21,7 +21,7 @@ def visualize_path(q_1, q_2, env, color=[0, 1, 0], tree='start'):
     point_1 = p.getLinkState(env.robot_body_id, 6)[0]
     env.set_joint_positions(q_2)
     point_2 = p.getLinkState(env.robot_body_id, 6)[0]
-    debug_color = color if tree == 'start' else [1, 0, 1]  # Màu sắc khác nhau cho hai cây
+    debug_color = color if tree == 'start' else [1, 0, 1]
     p.addUserDebugLine(point_1, point_2, debug_color, 1.0)
 
 def attractive_force(q_current, q_goal, k_att=1.0):
@@ -52,12 +52,9 @@ def repulsive_force(q_current, env, k_rep=1000.0, d0=1):
                         J = calculate_jacobian(env, q_current)
                         joint_force = np.dot(J.T, transformed_force[:3])
                         rep_force += joint_force
-
-                        # Visualization
                         p.addUserDebugLine(point, obstacle_pos, [1, 0, 0], lineWidth=2, lifeTime=0.1)
     return rep_force
 
-# Thêm các hàm phụ trợ khác từ rrt_apf.py
 def get_object_check_points(object_pos, object_orn):
     rot_matrix = p.getMatrixFromQuaternion(object_orn)
     rot_matrix = np.array(rot_matrix).reshape(3, 3)
@@ -76,7 +73,6 @@ def get_object_check_points(object_pos, object_orn):
                 points.append(world_point)
 
     return points
-    ...
 
 def transform_force(force, transform):
     moment = np.cross(transform, force[:3])
@@ -121,7 +117,6 @@ def modified_steer_birrt(q_nearest, q_rand, delta_q, q_goal, env, tree_identifie
     return q_new.tolist()
 
 def bidirectional_rrt(env, q_start, q_goal, MAX_ITERS, delta_q, steer_goal_p, max_connection_distance=0.3):
-    # Khởi tạo hai cây
     tree_start = [Node(q_start)]
     tree_goal = [Node(q_goal)]
 
@@ -135,24 +130,20 @@ def bidirectional_rrt(env, q_start, q_goal, MAX_ITERS, delta_q, steer_goal_p, ma
             other_tree = tree_start
             tree_identifier = 'goal'
 
-        if random.random() < 0.3:  # 30% cơ hội nhắm thẳng vào cây còn lại
+        if random.random() < 0.3:
             nearest_other = nearest([node.joint_positions for node in other_tree],
                                   current_tree[-1].joint_positions)
             q_rand = nearest_other
         else:
             q_rand = semi_random_sample(steer_goal_p, q_goal if tree_identifier == 'start' else q_start)
-
         q_nearest = nearest([node.joint_positions for node in current_tree], q_rand)
         q_new = modified_steer_birrt(q_nearest, q_rand, delta_q, q_goal, env, tree_identifier)
-
         if not env.check_collision(q_new, distance=0.17):
             new_node = Node(q_new)
             nearest_node = next(node for node in current_tree if node.joint_positions == q_nearest)
             new_node.parent = nearest_node
             current_tree.append(new_node)
             visualize_path(q_nearest, q_new, env, tree=tree_identifier)
-
-            # Thử kết nối với cây còn lại
             closest_other = nearest([node.joint_positions for node in other_tree], q_new)
             if get_euclidean_distance(q_new, closest_other) < max_connection_distance:
                 if try_connect_nodes(q_new, closest_other, env, delta_q):
@@ -174,7 +165,6 @@ def bidirectional_rrt(env, q_start, q_goal, MAX_ITERS, delta_q, steer_goal_p, ma
 def try_connect_nodes(q1, q2, env, step_size):
     distance = get_euclidean_distance(q1, q2)
     steps = max(int(distance / (step_size/2)), 5)
-
     for i in range(1, steps):
         t = i / steps
         q_interp = [q1[j] + (q2[j] - q1[j]) * t for j in range(len(q1))]
@@ -190,13 +180,11 @@ def extract_path(tree_start, tree_goal, node_start, node_goal,env):
         path_start.append(current.joint_positions)
         current = current.parent
     path_start.reverse()
-
     path_goal = []
     current = node_goal
     while current is not None:
         path_goal.append(current.joint_positions)
         current = current.parent
-
     complete_path = path_start + path_goal
     return smooth_path(complete_path, env)
 def smooth_path(path, env, max_tries=50):
@@ -275,9 +263,6 @@ def run_bidirectional_rrt():
                 print("No collision-free path is found within the iteration limit. Continuing ...")
                 path_lengths.append(None)  # Ghi nhận không tìm thấy đường đi
             else:
-                # Tính độ dài đường đi
-                print("\nĐường đi tìm được (các góc khớp):")
-                print("[")
                 for joint_state in path_conf:
                     joint_degrees = [round(math.degrees(angle), 2) for angle in joint_state]
                 for joint_state in path_conf:
@@ -297,7 +282,6 @@ def run_bidirectional_rrt():
                     env.move_joints(joint_state, speed=0.01)
                     link_state = p.getLinkState(env.robot_body_id, env.robot_end_effector_link_index)
                     markers.append(sim.SphereMarker(link_state[0], radius=0.01))
-                print("Path executed. Dropping the object")
                 env.open_gripper()
                 env.step_simulation(num_steps=5)
                 env.close_gripper()
@@ -357,25 +341,20 @@ def draw():
             closest_points = p.getClosestPoints(obstacles_id, object_id, 100)
             if not closest_points:
                 print("No closest points found")
-                a = getlink1  # Assign a default value to avoid errors
+                a = getlink1
             else:
                 a = closest_points[0][5]
 
             distance = get_distance(midpoint, a)
-
             lines_to_draw = [
                 (getlink1, a, [1, 0, 0]),    # Red line
                 (getlink2, a, [1, 0, 0]),    # Green line
                 (midpoint, a, [0, 1, 0])     # Green line
             ]
-
-            # Draw or update debug lines
             for i, (start, end, color) in enumerate(lines_to_draw):
                 if line_ids[i] is None:
-                    # Create a new debug line if it doesn't exist
                     line_ids[i] = p.addUserDebugLine(start, end, lineColorRGB=color, lineWidth=2)
                 else:
-                    # Update the existing debug line
                     p.addUserDebugLine(start, end, lineColorRGB=color, lineWidth=2, replaceItemUniqueId=line_ids[i])
 
         except IndexError as e:
@@ -385,7 +364,6 @@ def draw():
             current_obstacle_id = None
         except Exception as e:
             print(f"Exception in draw: {e}")
-
         time.sleep(0.1)
 
 def is_path_collision_free(env, q_start, q_end, step_size=0.01, distance=0.15):
@@ -401,19 +379,14 @@ def is_path_collision_free(env, q_start, q_end, step_size=0.01, distance=0.15):
     return True
 
 def connect_trees(tree_start, tree_goal, env, max_connection_distance):
-    # Tạo KD-Tree cho tree_goal
     tree_goal_positions = [node.joint_positions for node in tree_goal]
     kd_tree_goal = cKDTree(tree_goal_positions)
-
     for node_start in tree_start:
         q_start = node_start.joint_positions
         indices = kd_tree_goal.query_ball_point(q_start, r=max_connection_distance)
         for idx in indices:
             node_goal = tree_goal[idx]
             distance = get_euclidean_distance(q_start, node_goal.joint_positions)
-            print(f"Đã tìm thấy cặp nút gần nhau với khoảng cách {distance:.4f}. Thử kết nối...")
-            
-            # Kiểm tra va chạm giữa hai nút
             steps = int(distance / (max_connection_distance / 2))
             collision = False
             for t in range(1, steps + 1):
@@ -423,7 +396,6 @@ def connect_trees(tree_start, tree_goal, env, max_connection_distance):
                     for j in range(len(q_start))
                 ]
                 if env.check_collision(interp_q, distance=0.15):
-                    print("Đường đi giữa hai nút gặp va chạm. Không kết nối.")
                     collision = True
                     break
             if not collision:
@@ -441,10 +413,7 @@ def connect_trees(tree_start, tree_goal, env, max_connection_distance):
                     current = current.parent
 
                 combined_path = path_start + path_goal
-                print("Hai cây đã được kết nối thành công.")
                 return combined_path
-
-    print("Không tìm thấy cặp nút nào để kết nối hai cây.")
     return None
 
 if __name__ == "__main__":
