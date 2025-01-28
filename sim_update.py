@@ -132,9 +132,6 @@ class PyBulletSim:
                              rollingFriction=0.0001, frictionAnchor=True)
         self.step_simulation(1e3)
     def move_joints(self, target_joint_state, speed=0.01):
-        """
-            Move robot arm to specified joint configuration by appropriate motor control
-        """
         assert len(self._robot_joint_indices) == len(target_joint_state)
         p.setJointMotorControlArray(
             self.robot_body_id, self._robot_joint_indices,
@@ -166,19 +163,7 @@ class PyBulletSim:
                 break
             self.step_simulation(1)
     def move_tool(self, position, orientation, speed=0.03):
-        """
-            Move robot tool (end-effector) to a specified pose
-            @param position: Target position of the end-effector link
-            @param orientation: Target orientation of the end-effector link
-        """
         target_joint_state = np.zeros((6,))  # this should contain appropriate joint angle values
-        # ========= Part 1 ========
-        # Using inverse kinematics (p.calculateInverseKinematics), find out the target joint configuration of the robot
-        # in order to reach the desired end_effector position and orientation
-        # HINT: p.calculateInverseKinematics takes in the end effector **link index** and not the **joint index**. You can use
-        #   self.robot_end_effector_link_index for this
-        # HINT: You might want to tune optional parameters of p.calculateInverseKinematics for better performance
-        # ===============================
         target_joint_state = p.calculateInverseKinematics(self.robot_body_id,
                                                           self.robot_end_effector_link_index,
                                                           position, orientation,
@@ -204,12 +189,6 @@ class PyBulletSim:
         return p.getJointState(self._gripper_body_id, 1)[0] < 0.834 - 0.001
 
     def execute_grasp(self, grasp_position, grasp_angle):
-        """
-            Execute grasp sequence
-            @param: grasp_position: 3d position of place where the gripper jaws will be closed
-            @param: grasp_angle: angle of gripper before executing grasp from positive x axis in radians
-        """
-        # Adjust grasp_position to account for end-effector length
         grasp_position = grasp_position + self._tool_tip_to_ee_joint
         gripper_orientation = p.getQuaternionFromEuler(
             [np.pi, 0, grasp_angle+np.pi/2])
@@ -217,17 +196,6 @@ class PyBulletSim:
         pre_grasp_position_over_object = grasp_position+np.array([0, 0, 0.1])
         post_grasp_position = grasp_position+np.array([0, 0, 0.3])
         grasp_success = False
-        # ========= PART 2============
-        # Implement the following grasp sequence:
-        # 1. open gripper
-        # 2. Move gripper to pre_grasp_position_over_bin
-        # 3. Move gripper to pre_grasp_position_over_object
-        # 4. Move gripper to grasp_position
-        # 5. Close gripper
-        # 6. Move gripper to post_grasp_position
-        # 7. Move robot to robot_home_joint_config
-        # 8. Detect whether or not the object was grasped and return grasp_success
-        # ============================
         self.open_gripper()
         self.move_tool(pre_grasp_position_over_bin, None)
         self.move_tool(pre_grasp_position_over_object, gripper_orientation)
@@ -272,14 +240,6 @@ class PyBulletSim:
             p.resetJointState(self.robot_body_id, joint, value)
 
     def check_collision(self, q, distance=0.15):
-        """
-        Check collision between all parts of the robot (excluding the base) and obstacles.
-
-        :param q: A list of joint angles representing the robot's configuration.
-        :param distance: The minimum allowed distance between the robot and any obstacle.
-        :return: True if a collision is detected, False otherwise.
-        """
-        # Set the robot to the specified joint configuration
         self.set_joint_positions(q)
 
         # Ensure the gripper is loaded before performing collision checks
@@ -368,10 +328,6 @@ class SphereMarker:
 
 
 def get_tableau_palette():
-    """
-    returns a beautiful color palette
-    :return palette (np.array object): np array of rgb colors in range [0, 1]
-    """
     palette = np.array(
         [
             [89, 169, 79],  # green

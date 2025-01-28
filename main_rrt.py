@@ -16,19 +16,15 @@ def visualize_path(q_1, q_2, env, color=[0, 1, 0]):
     env.set_joint_positions(q_1)
     point_1 = list(p.getLinkState(env.robot_body_id, 6)[0])
     point_1[2] -= 0.15
-    
     env.set_joint_positions(q_2)
     point_2 = list(p.getLinkState(env.robot_body_id, 6)[0])
     point_2[2] -= 0.15
-    
     p.addUserDebugLine(point_1, point_2, color, 1.5)
 
 
 def rrt(q_init, q_goal, MAX_ITERS, delta_q, steer_goal_p, env, distance=0.12):
-
     V, E = [q_init], []
     path, found = [], False
-
     for i in range(MAX_ITERS):
         q_rand = semi_random_sample(steer_goal_p, q_goal)
         q_nearest = nearest(V, q_rand)
@@ -103,13 +99,13 @@ def get_grasp_position_angle(object_id):
     position, orientation = p.getBasePositionAndOrientation(object_id)
     grasp_angle = p.getEulerFromQuaternion(orientation)[2]
     return position, grasp_angle
+
 def run():
     num_trials = 20  
     path_lengths = []
     env.load_gripper()
     passed = 0
     for trial in range(num_trials):
-        print(f"Thử nghiệm thứ: {trial + 1}")
         object_id = env._objects_body_ids[0]
         position, grasp_angle = get_grasp_position_angle(object_id)
         grasp_success = env.execute_grasp(position, grasp_angle)
@@ -243,5 +239,5 @@ if __name__ == "__main__":
     thread1 = threading.Thread(target=run)
     thread2 = threading.Thread(target=draw)
     thread1.start()
-    thread2.start()
+    # thread2.start()
     
