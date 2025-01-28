@@ -239,37 +239,14 @@ class PyBulletSim:
         for joint, value in zip(self._robot_joint_indices, values):
             p.resetJointState(self.robot_body_id, joint, value)
 
-    def check_collision(self, q, distance=0.15):
+    def check_collision(self, q, distance=0.18):
         self.set_joint_positions(q)
-
-        # Ensure the gripper is loaded before performing collision checks
-        if self._gripper_body_id is None:
-            print("Gripper not loaded. Please load the gripper before checking collisions.")
-            return False
-
-        collision_detected = False
-
-        # Get all link indices of the robot (excluding the base)
-        num_links = p.getNumJoints(self.robot_body_id)
-        robot_link_indices = list(range(num_links))  # Exclude the base by not including -1
-
-        # Iterate through each link of the robot and each obstacle to check for collisions
         for obstacle_id in self.obstacles:
-            for link_idx in robot_link_indices:
-                # Get link name for better logging
-                link_name = p.getJointInfo(self.robot_body_id, link_idx)[12].decode('utf-8')
-
-                closest_points = p.getClosestPoints(
-                    self.robot_body_id, obstacle_id, distance, linkIndexA=link_idx)
-                if closest_points:
-                    # Collision detected
-                    # print(f"Collision detected between robot link '{link_name}' (index {link_idx}) and obstacle ID {obstacle_id}")
-                    collision_detected = True
-                    break  # Exit early on first detected collision
-            if collision_detected:
-                break  # Exit if any collision is detected
-
-        return collision_detected
+            closest_points = p.getClosestPoints(
+                self.robot_body_id, obstacle_id, distance)
+            if closest_points is not None and len(closest_points) != 0:
+                return True
+        return False
 
 
 class SphereMarker:

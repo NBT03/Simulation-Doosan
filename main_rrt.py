@@ -29,7 +29,7 @@ def rrt(q_init, q_goal, MAX_ITERS, delta_q, steer_goal_p, env, distance=0.12):
         q_rand = semi_random_sample(steer_goal_p, q_goal)
         q_nearest = nearest(V, q_rand)
         q_new = steer(q_nearest, q_rand, delta_q)
-        if not env.check_collision(q_new, 0.12):
+        if not env.check_collision(q_new, 0.18):
             if q_new not in V:
                 V.append(q_new)
             if (q_nearest, q_new) not in E:

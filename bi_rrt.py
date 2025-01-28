@@ -104,7 +104,6 @@ def extract_path(tree1, tree2, node1, node2, env):
         path_start.append(current.joint_positions)
         current = current.parent
     path_start.reverse()
-
     path_goal = []
     current = node2
     while current is not None:
