@@ -42,7 +42,7 @@ class PyBulletSim:
                                         np.pi * (89.39/180),
                                         np.pi * (3.73/180)]
 
-        self.robot_goal_joint_config = [ np.pi * (0.00 / 180),
+        self.robot_goal_joint_config = [ np.pi * (94.06/180),
                                         np.pi * (30 / 180),
                                         np.pi * (60.87 / 180),
                                         np.pi * (1.48 / 180),
@@ -76,15 +76,15 @@ class PyBulletSim:
                        useFixedBase=True
                        ),
             p.loadURDF('assets/obstacles/block.urdf',
-                       basePosition=[0.35, -0.35, 0.26],
+                       basePosition=[0.35, -0.35, 0.35],
                        useFixedBase=True
                        ),
             p.loadURDF('assets/obstacles/block.urdf',
-                       basePosition=[0.2, 0.6, 0.35],
+                       basePosition=[0.4, 0.4, 0.25],
                        useFixedBase=True
                        ),
             p.loadURDF('assets/obstacles/block.urdf',
-                       basePosition=[0.35, 0.7, 0.31],
+                       basePosition=[-0.4, 0.5, 0.3],
                        useFixedBase=True
                        ),
         ]

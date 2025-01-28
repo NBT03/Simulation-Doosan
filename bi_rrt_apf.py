@@ -138,7 +138,7 @@ def bidirectional_rrt(env, q_start, q_goal, MAX_ITERS, delta_q, steer_goal_p, ma
             q_rand = semi_random_sample(steer_goal_p, q_goal if tree_identifier == 'start' else q_start)
         q_nearest = nearest([node.joint_positions for node in current_tree], q_rand)
         q_new = modified_steer_birrt(q_nearest, q_rand, delta_q, q_goal, env, tree_identifier)
-        if not env.check_collision(q_new, distance=0.17):
+        if not env.check_collision(q_new, distance=0.165):
             new_node = Node(q_new)
             nearest_node = next(node for node in current_tree if node.joint_positions == q_nearest)
             new_node.parent = nearest_node
@@ -395,7 +395,7 @@ def connect_trees(tree_start, tree_goal, env, max_connection_distance):
                     (node_goal.joint_positions[j] - q_start[j]) * (t / steps)
                     for j in range(len(q_start))
                 ]
-                if env.check_collision(interp_q, distance=0.15):
+                if env.check_collision(interp_q, distance=0.18):
                     collision = True
                     break
             if not collision:
