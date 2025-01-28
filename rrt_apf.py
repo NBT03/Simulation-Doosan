@@ -1,11 +1,9 @@
 from __future__ import division
-from os import link
 import sim
 import pybullet as p
 import random
 import numpy as np
 import math
-import matplotlib.pyplot as plt
 import time
 import threading
 
@@ -79,7 +77,6 @@ def nearest(V, q_rand):
     return q_nearest
 
 def modified_steer(q_nearest, q_rand, delta_q, q_goal, env):
-    """Hàm steer mới có tích hợp APF"""
     att = attractive_force(q_nearest, q_goal)
     rep = repulsive_force(q_nearest, env)
     total_force = att + rep
@@ -230,25 +227,20 @@ def draw():
     
     while True:
         try:
-            # Ensure there are objects and obstacles in the environment
             if len(env._objects_body_ids) == 0 or len(env.obstacles) == 0:
                 print("No objects or obstacles found, waiting...")
                 time.sleep(0.1)
                 continue
             
-            # Get current object and obstacle IDs
             object_id = env._objects_body_ids[0]
             obstacles_id = env.obstacles[0]
             
-            # Check if the object or obstacle has been reset
             if object_id != current_object_id or obstacles_id != current_obstacle_id:
-                # Reset line IDs when a new object or obstacle is detected
                 line_ids = [None, None, None]
                 current_object_id = object_id
                 current_obstacle_id = obstacles_id
                 print(f"Detected object or obstacles change. Updated object_id: {object_id}, obstacle_id: {obstacles_id}")
             
-            # Verify that the object and obstacle still exist
             try:
                 p.getBodyInfo(object_id)
                 p.getBodyInfo(obstacles_id)
@@ -257,42 +249,33 @@ def draw():
                 time.sleep(0.1)
                 continue
             
-            # Get link positions
             getlink1 = p.getLinkState(object_id, 0)[0]
             getlink2 = p.getLinkState(object_id, 1)[0]
             midpoint = np.add(getlink1, getlink2) / 2
-            
-            # Find the closest points between the object and obstacle
             closest_points = p.getClosestPoints(obstacles_id, object_id, 100)
             if not closest_points:
                 print("No closest points found")
-                a = getlink1  # Assign a default value to avoid errors
+                a = getlink1
             else:
                 a = closest_points[0][5]
                 
-            # Calculate the distance and print it
             distance = get_distance(midpoint, a)
             print(f"Distance between midpoint and closest point: {distance}")
             
-            # Define lines to be drawn
             lines_to_draw = [
-                (getlink1, a, [1, 0, 0]),    # Red line
-                (getlink2, a, [1, 0, 0]),    # Green line
-                (midpoint, a, [0, 1, 0])     # Green line
+                (getlink1, a, [1, 0, 0]),
+                (getlink2, a, [1, 0, 0]),
+                (midpoint, a, [0, 1, 0])
             ]
             
-            # Draw or update debug lines
             for i, (start, end, color) in enumerate(lines_to_draw):
                 if line_ids[i] is None:
-                    # Create a new debug line if it doesn't exist
                     line_ids[i] = p.addUserDebugLine(start, end, lineColorRGB=color, lineWidth=2)
                 else:
-                    # Update the existing debug line
                     p.addUserDebugLine(start, end, lineColorRGB=color, lineWidth=2, replaceItemUniqueId=line_ids[i])
             
         except IndexError as e:
             print(f"IndexError: {e}. Possible object or obstacle indices out of range. Retrying...")
-            # Reset line IDs to reinitialize lines in the next iteration
             line_ids = [None, None, None]
             current_object_id = None
             current_obstacle_id = None

@@ -1,14 +1,11 @@
 from __future__ import division
-from os import link
 import sim
 import pybullet as p
 import random
 import numpy as np
 import math
-import matplotlib.pyplot as plt
 import time
 import threading
-
 MAX_ITERS = 10000
 delta_q = 0.1
 
