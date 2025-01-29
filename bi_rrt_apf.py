@@ -9,7 +9,7 @@ from scipy.spatial import cKDTree
 import numpy as np
 
 MAX_ITERS = 10000
-delta_q = 0.1
+delta_q = 0.2
 
 class Node:
     def __init__(self, joint_positions, parent=None):
@@ -186,7 +186,8 @@ def extract_path(tree_start, tree_goal, node_start, node_goal,env):
         path_goal.append(current.joint_positions)
         current = current.parent
     complete_path = path_start + path_goal
-    return smooth_path(complete_path, env)
+    # return smooth_path(complete_path, env
+    return complete_path
 def smooth_path(path, env, max_tries=50):
     if len(path) <= 2:
         return path

@@ -21,7 +21,6 @@ class PyBulletSim:
         # load Doosan robot
         self.robot_body_id = p.loadURDF(
             "assets/doosan/doosan_origin.urdf", [0, 0, 0], p.getQuaternionFromEuler([0, 0, 0]))
-
         # self._base_id = p.loadURDF(
         #     "assets/doosan/base_doosan.urdf", [0.75,0.3,0], p.getQuaternionFromEuler([0,0,np.pi]),useFixedBase=True)
         # self._cabin_id = p.loadURDF(
