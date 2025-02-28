@@ -147,7 +147,6 @@ def bidirectional_rrt(env, q_start, q_goal, MAX_ITERS, delta_q, steer_goal_p, ma
             closest_other = nearest([node.joint_positions for node in other_tree], q_new)
             if get_euclidean_distance(q_new, closest_other) < max_connection_distance:
                 if try_connect_nodes(q_new, closest_other, env, delta_q):
-                    # Tìm thấy đường đi
                     if tree_identifier == 'start':
                         path = extract_path(current_tree, other_tree, new_node,
                                          next(node for node in other_tree
@@ -185,7 +184,7 @@ def extract_path(tree_start, tree_goal, node_start, node_goal,env):
     while current is not None:
         path_goal.append(current.joint_positions)
         current = current.parent
-    complete_path = path_start + path_goal
+        complete_path = path_start + path_goal
     # return smooth_path(complete_path, env
     return complete_path
 def smooth_path(path, env, max_tries=50):
@@ -392,7 +391,7 @@ def connect_trees(tree_start, tree_goal, env, max_connection_distance):
             collision = False
             for t in range(1, steps + 1):
                 interp_q = [
-                    q_start[j] + 
+                    q_start[j] +
                     (node_goal.joint_positions[j] - q_start[j]) * (t / steps)
                     for j in range(len(q_start))
                 ]
@@ -418,7 +417,7 @@ def connect_trees(tree_start, tree_goal, env, max_connection_distance):
     return None
 
 if __name__ == "__main__":
-    random.seed(1)
+    random.seed(2)
     object_shapes = [
         "assets/objects/rod.urdf",
     ]
