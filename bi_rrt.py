@@ -15,15 +15,13 @@ class Node:
     def __init__(self, joint_positions, parent=None):
         self.joint_positions = joint_positions
         self.parent = parent
-def visualize_path(q_1, q_2, env, color=[0, 1, 0],tree='start'):
+def visualize_path(q_1, q_2, env, color=[0, 1, 0], tree='start'):
     env.set_joint_positions(q_1)
-    point_1 = list(p.getLinkState(env.robot_body_id, 6)[0])
-    point_1[2] -= 0.15
+    point_1 = p.getLinkState(env.robot_body_id, 6)[0]
     env.set_joint_positions(q_2)
-    point_2 = list(p.getLinkState(env.robot_body_id, 6)[0])
-    point_2[2] -= 0.15
+    point_2 = p.getLinkState(env.robot_body_id, 6)[0]
     debug_color = color if tree == 'start' else [1, 0, 1]
-    p.addUserDebugLine(point_1, point_2, debug_color, 1.5)
+    p.addUserDebugLine(point_1, point_2, debug_color, 1.0)
 
 
 def bidirectional_rrt(env, q_start, q_goal, MAX_ITERS, delta_q, steer_goal_p, max_connection_distance=0.3):
@@ -96,7 +94,7 @@ def extract_path(tree1, tree2, node1, node2, env):
         current = current.parent
 
     complete_path = path_start + path_goal
-    return smooth_path(complete_path, env)
+    return complete_path
 def smooth_path(path, env, max_tries=50):
     if len(path) <= 2:
         return path

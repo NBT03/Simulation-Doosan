@@ -9,7 +9,7 @@
 	<visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="assets/ur5/m0609_collision/base_doosan.STL" scale="0.01 0.01 0.01"/>
+        <mesh filename="assets/doosan/m0609_collision/base_doosan.STL" scale="0.01 0.01 0.01"/>
       </geometry>
       <material name="dr_gray"/>
     </visual>

@@ -8,7 +8,7 @@ class PyBulletSim:
         self._workspace1_bounds = np.array([
             [-0.16, -0.17],
             [-0.55, -0.55],
-            [0.1, 0.2]
+            [0.78, 0.80]
         ])
         if gui:
             p.connect(p.GUI)
@@ -20,11 +20,11 @@ class PyBulletSim:
 
         # load Doosan robot
         self.robot_body_id = p.loadURDF(
-            "assets/doosan/doosan_origin.urdf", [0, 0, 0], p.getQuaternionFromEuler([0, 0, 0]))
-        # self._base_id = p.loadURDF(
-        #     "assets/doosan/base_doosan.urdf", [0.75,0.3,0], p.getQuaternionFromEuler([0,0,np.pi]),useFixedBase=True)
-        # self._cabin_id = p.loadURDF(
-        #     "assets/doosan/Cabin.urdf",[-0.75,-1,0], p.getQuaternionFromEuler([np.pi/2, 0, np.pi/2]),useFixedBase=True)
+            "assets/doosan/doosan_origin.urdf", [0, 0, 0.75], p.getQuaternionFromEuler([0, 0, 0]))
+        self._base_id = p.loadURDF(
+            "assets/doosan/base_doosan.urdf", [0.75,0.3,0], p.getQuaternionFromEuler([0,0,np.pi]),useFixedBase=True)
+        self._cabin_id = p.loadURDF(
+            "assets/doosan/Cabin.urdf",[-0.75,-1,0], p.getQuaternionFromEuler([np.pi/2, 0, np.pi/2]),useFixedBase=True)
         self._gripper_body_id = None
         self.robot_end_effector_link_index = 6
         self._robot_tool_offset = [0, 0, 0]
@@ -50,7 +50,7 @@ class PyBulletSim:
 
         self.move_joints(self.robot_home_joint_config, speed=0.05)
         self._tote_id = p.loadURDF(
-            "assets/tote/tote_bin.urdf",[-0.3,-0.35,0.10], p.getQuaternionFromEuler([np.pi/2, 0, 0]), useFixedBase=True)
+            "assets/tote/tote_bin.urdf",[-0.3,-0.35,0.80], p.getQuaternionFromEuler([np.pi/2, 0, 0]), useFixedBase=True)
         self._object_colors = get_tableau_palette()
         if object_shapes is not None:
             self._object_shapes = object_shapes
@@ -71,19 +71,19 @@ class PyBulletSim:
         self.reset_objects()
         self.obstacles = [
             p.loadURDF('assets/obstacles/block.urdf',
-                       basePosition=[0.5, -0.6, 0.3],
+                       basePosition=[0.5, -0.6, 1.0],
                        useFixedBase=True
                        ),
             p.loadURDF('assets/obstacles/block.urdf',
-                       basePosition=[0.35, -0.35, 0.35],
+                       basePosition=[0.35, -0.35, 1.05],
                        useFixedBase=True
                        ),
             p.loadURDF('assets/obstacles/block.urdf',
-                       basePosition=[0.4, 0.4, 0.25],
+                       basePosition=[0.4, 0.4, 0.95],
                        useFixedBase=True
                        ),
             p.loadURDF('assets/obstacles/block.urdf',
-                       basePosition=[-0.4, 0.5, 0.3],
+                       basePosition=[-0.4, 0.5, 1.0],
                        useFixedBase=True
                        ),
         ]
