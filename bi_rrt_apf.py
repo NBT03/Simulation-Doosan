@@ -138,7 +138,7 @@ def bidirectional_rrt(env, q_start, q_goal, MAX_ITERS, delta_q, steer_goal_p, ma
             q_rand = semi_random_sample(steer_goal_p, q_goal if tree_identifier == 'start' else q_start)
         q_nearest = nearest([node.joint_positions for node in current_tree], q_rand)
         q_new = modified_steer_birrt(q_nearest, q_rand, delta_q, q_goal, env, tree_identifier)
-        if not env.check_collision(q_new, distance=0.165):
+        if not env.check_collision(q_new, distance=0.18):
             new_node = Node(q_new)
             nearest_node = next(node for node in current_tree if node.joint_positions == q_nearest)
             new_node.parent = nearest_node
@@ -263,6 +263,12 @@ def run_bidirectional_rrt():
                 print("No collision-free path is found within the iteration limit. Continuing ...")
                 path_lengths.append(None)  # Ghi nhận không tìm thấy đường đi
             else:
+                path_conf_degrees = []
+                for joint_angles in path_conf:
+                    degrees_row = [angle * 180.0 / np.pi for angle in joint_angles]
+                    path_conf_degrees.append(degrees_row)
+
+                print(path_conf_degrees)
                 for joint_state in path_conf:
                     joint_degrees = [round(math.degrees(angle), 2) for angle in joint_state]
                 for joint_state in path_conf:
@@ -279,7 +285,7 @@ def run_bidirectional_rrt():
                 env.set_joint_positions(env.robot_home_joint_config)
                 markers = []
                 for joint_state in path_conf:
-                    env.move_joints(joint_state, speed=0.01)
+                    env.move_joints(joint_state, speed=0.003)
                     link_state = p.getLinkState(env.robot_body_id, env.robot_end_effector_link_index)
                     markers.append(sim.SphereMarker(link_state[0], radius=0.01))
                 env.open_gripper()
@@ -288,7 +294,7 @@ def run_bidirectional_rrt():
                 path_conf_reversed = path_conf[::-1]
                 if path_conf_reversed:
                     for joint_state in path_conf_reversed:
-                        env.move_joints(joint_state, speed=0.01)
+                        env.move_joints(joint_state, speed=0.003)
                         link_state = p.getLinkState(env.robot_body_id, env.robot_end_effector_link_index)
                         markers.append(sim.SphereMarker(link_state[0], radius=0.01))
                 markers = None
@@ -425,4 +431,4 @@ if __name__ == "__main__":
     thread1 = threading.Thread(target=run_bidirectional_rrt)
     thread2 = threading.Thread(target=draw)
     thread1.start()
-    # thread2.start()
+    thread2.start()

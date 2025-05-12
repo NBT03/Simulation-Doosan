@@ -23,7 +23,7 @@
     <inertial>
       <origin
         xyz="0 0 0"
-        rpy="0 0 0" />
+        rpy="0 0 90" />
       <mass
        value="3.722" />
       <inertia ixx="0.011" ixy="-7.19e-06" ixz="-1.94e-06" iyy="0.011" iyz="4.9e-06" izz="0.014"/>
@@ -31,7 +31,7 @@
     <visual>
       <origin
         xyz="0 0 0"
-        rpy="0 0 0" />
+        rpy="0 0 90" />
       <geometry>
         <mesh
           filename="m0609_collision/MF0609_0_0.dae" scale="0.001 0.001 0.001"/>
@@ -45,7 +45,7 @@
     <collision>
       <origin
         xyz="0 0 0"
-        rpy="0 0 0" />
+        rpy="0 0 90" />
       <geometry>
         <mesh
           filename="m0609_collision/MF0609_0_0.dae" scale="0.001 0.001 0.001"/>

@@ -107,6 +107,7 @@ def run():
                 print("No collision-free path is found within the time budget. Continuing...")
                 path_lengths.append(None)  
             else:
+                print(path_conf)
                 path_length = 0
                 for i in range(1, len(path_conf)):
                     path_length += get_euclidean_distance(path_conf[i-1], path_conf[i])
@@ -114,15 +115,16 @@ def run():
                 env.set_joint_positions(env.robot_home_joint_config)
                 markers = []
                 for joint_state in path_conf:
-                    env.move_joints(joint_state, speed=0.05)
+                    env.move_joints(joint_state, speed=0.01)
                     link_state = p.getLinkState(env.robot_body_id, env.robot_end_effector_link_index)
                     # markers.append(sim.SphereMarker(link_state[0], radius=0.02))
                 print("Path executed. Dropping the object")
                 env.open_gripper()
                 env.step_simulation(num_steps=5)
                 env.close_gripper()
+                print(joint_state)
                 for joint_state in reversed(path_conf):
-                    env.move_joints(joint_state, speed=0.1)
+                    env.move_joints(joint_state, speed=0.01)
                 markers = None
             p.removeAllUserDebugItems()
         env.robot_go_home()
